@@ -17,10 +17,12 @@ const getById = async (req, res, next) => {
   res.status(httpStatus.ok).json(product);
 };
 
-const addProduct = async (req, res) => {
+const addProduct = async (req, res, next) => {
   const { name } = req.body;
 
   const product = await productsService.addProduct(name);
+
+  if (product.error) return next(product.error);
 
   res.status(httpStatus.created).json(product);
 };

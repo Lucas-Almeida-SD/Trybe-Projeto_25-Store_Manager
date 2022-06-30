@@ -6,6 +6,7 @@ const salesModel = require('../../../models/salesModel');
 const productsModel = require('../../../models/productsModel');
 const dataMock = require('../../../__tests__/_dataMock');
 const generateError = require('../../../helpers/generateError');
+const myDataMock = require('../mocks/dataMock');
 
 const {
   wrongSaleNotProductIdBody,
@@ -16,6 +17,8 @@ const {
   saleCreateResponse,
   rightSaleBody,
 } = dataMock;
+
+const { salesList, idOneSaleList } = myDataMock;
 
 describe('Service - Testes da rota "POST /sales"', () => {
 
@@ -97,5 +100,66 @@ describe('Service - Testes da rota "POST /sales"', () => {
       expect(salesProduct).to.be.eqls(saleCreateResponse);
     });
   });
+});
 
+describe('Service - Testes da rota "GET /sales"', () => {
+  describe('quando realiza leitura das vendas', () => {
+
+    beforeEach(() => {
+      sinon.stub(salesModel, 'getAll').resolves(salesList);
+    });
+
+    afterEach(() => {
+      salesModel.getAll.restore();
+    });
+
+    it('retorna um array de objetos com informações das vendas', async () => {
+      const sales = await salesService.getAll();
+
+      expect(sales).to.be.equals(salesList);
+    });
+  });
+});
+
+describe('Service - Testes da rota "GET /sales/:id"', () => {
+
+  describe('quando realiza leitura da venda', () => {
+
+    describe('quando nao encontra a venda', () => {
+      const nonExistentId = 9999;
+      const erro = generateError('notFound', 'Sale not found');
+
+      beforeEach(() => {
+        sinon.stub(salesModel, 'getById').resolves(undefined);
+      });
+
+      afterEach(() => {
+        salesModel.getById.restore();
+      });
+
+      it('retorna o error object "{ error: { code: "notFound", message: "Sale not found" } }"', async () => {
+        const sale = await salesService.getById(nonExistentId);
+
+        expect(sale).to.be.eqls(erro);
+      })
+    });
+
+    describe('quando encontra a venda', () => {
+      const saleId = 1;
+
+      beforeEach(() => {
+        sinon.stub(salesModel, 'getById').resolves(idOneSaleList);
+      });
+
+      afterEach(() => {
+        salesModel.getById.restore();
+      });
+
+      it('retorna um array de objetos com informações da venda', async () => {
+        const sale = await salesService.getById(saleId);
+
+        expect(sale).to.be.eqls(idOneSaleList);
+      })
+    });
+  });
 });

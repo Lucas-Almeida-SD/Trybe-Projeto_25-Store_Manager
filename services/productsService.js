@@ -7,6 +7,8 @@ const validateName = (name) => {
   if (name.length < 5) {
     return generateError('unprocessableEntity', '"name" length must be at least 5 characters long');
   }
+  
+  return {};
 };
 
 const getAll = async () => {

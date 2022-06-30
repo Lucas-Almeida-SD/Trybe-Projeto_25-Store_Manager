@@ -39,7 +39,9 @@ const updateProduct = async (id, name) => {
     WHERE id = ?
   `;
 
-  await connection.execute(query, [name, id]);
+  const [{ affectedRows }] = await connection.execute(query, [name, id]);
+
+  return affectedRows;
 };
 
 module.exports = {

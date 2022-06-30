@@ -3,13 +3,12 @@ const { expect } = require('chai');
 
 const productsModel = require('../../../models/productsModel');
 const connection = require('../../../helpers/connection');
-const { allProductsResponse } = require('../../../__tests__/_dataMock');
+const dataMock = require('../../../__tests__/_dataMock');
 
-
-describe('Model - Testes da rota "/products"', () => {
-  describe('quando realiza a leitura de todos os filmes com sucesso', () => {
+describe('Model - Testes da rota "GET /products"', () => {
+  describe('quando realiza a leitura de todos os produtos com sucesso', () => {
     before(() => {
-      sinon.stub(connection, 'execute').resolves([allProductsResponse]);
+      sinon.stub(connection, 'execute').resolves([dataMock.allProductsResponse]);
     });
 
     after(() => {
@@ -21,35 +20,35 @@ describe('Model - Testes da rota "/products"', () => {
       it('retorna um array com todos os produtos', async () => {
         const products = await productsModel.getAll();
   
-        expect(products).to.be.equals(allProductsResponse);
+        expect(products).to.be.equals(dataMock.allProductsResponse);
       });
     });
   });
 });
 
-describe('Model - Testes da rota "/products/:id"', () => {
+describe('Model - Testes da rota "GET /products/:id"', () => {
   const id = 1;
 
-  describe('quando realiza a leitura do filme', () => {
+  describe('quando realiza a leitura do produto', () => {
 
-    describe('quando encontra o filme', () => {
+    describe('quando encontra o produto', () => {
 
       beforeEach(() => {
-      sinon.stub(connection, 'execute').resolves([[allProductsResponse[0]]]);
+      sinon.stub(connection, 'execute').resolves([[dataMock.allProductsResponse[0]]]);
       });
 
       afterEach(() => {
         connection.execute.restore();
       });
       
-      it('retorna um objeto com os dados do filme', async () => {
+      it('retorna um objeto com os dados do produto', async () => {
         const product = await productsModel.getById(id)
 
-        expect(product).to.be.equals(allProductsResponse[0]);
+        expect(product).to.be.equals(dataMock.allProductsResponse[0]);
       });
     });
 
-    describe('quando não encontra o filme', () => {
+    describe('quando não encontra o produto', () => {
 
       beforeEach(() => {
       sinon.stub(connection, 'execute').resolves([[]]);
@@ -66,4 +65,21 @@ describe('Model - Testes da rota "/products/:id"', () => {
       });
     })
   });
+});
+
+describe('Model - Testes da rota "POST /products"', () => {
+  describe('quando realiza a inserção do produto', () => {
+    beforeEach(() => {
+      sinon.stub(connection, 'execute').resolves([{ insertId: 4 }]);
+    });
+    afterEach(() => {
+      connection.execute.restore();
+    })
+
+    it('retorna um objeto com os dados do produto', async () => {
+      const product = await productsModel.addProduct(dataMock.rightProductBody.name);
+
+      expect(product).to.be.eqls(dataMock.productCreateResponse);
+    })
+  })
 });

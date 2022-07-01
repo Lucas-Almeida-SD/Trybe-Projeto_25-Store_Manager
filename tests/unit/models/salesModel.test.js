@@ -114,3 +114,41 @@ describe('Model - Testes da rota "GET /sales/:id"', () => {
     })
   });
 });
+
+describe('Model - Testes da rota "DELETE /sales/:id"', () => {
+  const saleId = 1;
+
+  describe('quando uma "sale" é deletada', () => {
+
+    beforeEach(() => {
+      sinon.stub(connection, 'execute').resolves([{ affectedRows: 1 }]);
+    });
+
+    afterEach(() => {
+      connection.execute.restore();
+    });
+
+    it('retorna o valor "1" correspondente às "affectedRows"', async () => {
+      const sale = await salesModel.deleteSales(saleId);
+
+      expect(sale).to.be.equal(1);
+    });
+  });
+
+  describe('quando um "sale product" é deletado', () => {
+
+    beforeEach(() => {
+      sinon.stub(connection, 'execute').resolves([{ affectedRows: 1 }]);
+    });
+
+    afterEach(() => {
+      connection.execute.restore();
+    });
+
+    it('retorna o valor "1" correspondente às "affectedRows"', async () => {
+      const saleProduct = await salesModel.deleteSalesProducts(saleId);
+
+      expect(saleProduct).to.be.above(0);
+    });
+  });
+});

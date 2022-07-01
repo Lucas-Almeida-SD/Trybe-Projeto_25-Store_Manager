@@ -211,3 +211,57 @@ describe('Controller - Testes da rota "GET /sales/:id"', () => {
     });
   });
 });
+
+describe('Controller - Testes da rota "DELETE /sales/:id"', () => {
+  const request = {};
+  const response = {};
+  let next;
+
+  const saleId = 1;
+  const nonExistentId = 9999;
+
+  before(() => {
+    response.status = sinon.stub().returns(response);
+    response.end = sinon.stub().returns();
+    next = sinon.stub().returns();
+  });
+
+  describe('quando a "sale" não existe', () => {
+      const erro = generateError('notFound', 'Sale not found');
+
+    beforeEach(() => {
+      sinon.stub(salesService, 'deleteSales').resolves(erro);
+    });
+
+    afterEach(() => {
+      salesService.deleteSales.restore();
+    });
+
+    it('retorna a função next contendo como parâmetro o error object "{ code: "notFound", message: "Sale not found" }"', async () => {
+      request.params = {};
+
+      await salesController.deleteSales(request, response, next);
+
+      expect(next.calledWith(erro.error)).to.be.true;
+    });
+  });
+
+  describe('quando a "sale" é deletada', () => {
+
+    beforeEach(() => {
+      sinon.stub(salesService, 'deleteSales').resolves({});
+    });
+
+    afterEach(() => {
+      salesService.deleteSales.restore();
+    });
+
+    it('responde com status "204"', async () => {
+      request.params = { id: saleId };
+
+      await salesController.deleteSales(request, response, next);
+
+      expect(response.status.calledWith(204)).to.be.true;
+    });
+  });
+});

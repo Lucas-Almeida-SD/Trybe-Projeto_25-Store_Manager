@@ -110,3 +110,24 @@ describe('Model - Testes da rota "PUT /products/:id"', () => {
     });
   });
 });
+
+describe('Model - Testes da rota "DELETE /products/:id"', () => {
+  const { id } = allProductsResponse[0];
+
+  describe('quando deleta um produto', () => {
+
+    beforeEach(() => {
+      sinon.stub(connection, 'execute').resolves([{ affectedRows: 1 }]);
+    });
+
+    afterEach(() => {
+      connection.execute.restore();
+    });
+
+    it('retorn o valor "1"', async () => {
+      const product = await productsModel.deleteProducts(id);
+
+      expect(product).to.be.equal(1);
+    });
+  });
+});

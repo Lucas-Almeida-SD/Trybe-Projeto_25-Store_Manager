@@ -163,3 +163,47 @@ describe('Service - Testes da rota "GET /sales/:id"', () => {
     });
   });
 });
+
+describe('Service - Testes da rota "DELETE /sales/:id"', () => {
+  const saleId = 1;
+  const nonExistentId = 9999;
+
+  describe('quando a "sale" não existe', () => {
+      const erro = generateError('notFound', 'Sale not found');
+
+    beforeEach(() => {
+      sinon.stub(salesModel, 'deleteSales').resolves(0);
+      sinon.stub(salesModel, 'deleteSalesProducts').resolves();
+    });
+
+    afterEach(() => {
+      salesModel.deleteSales.restore();
+      salesModel.deleteSalesProducts.restore();
+    });
+
+    it('retorna o error object "{ error: { code: "notFound", message: "Sale not found" } }"', async () => {
+      const sale = await salesService.deleteSales(nonExistentId);
+
+      expect(sale).to.be.eqls(erro);
+    });
+  });
+
+  describe('quando a "sale" é deletada', () => {
+
+    beforeEach(() => {
+      sinon.stub(salesModel, 'deleteSales').resolves(1);
+      sinon.stub(salesModel, 'deleteSalesProducts').resolves();
+    });
+
+    afterEach(() => {
+      salesModel.deleteSales.restore();
+      salesModel.deleteSalesProducts.restore();
+    });
+
+    it('retorna um objeto vazio "{}"', async () => {
+      const sale = await salesService.deleteSales(saleId);
+
+      expect(sale).to.be.eqls({});
+    });
+  });
+});

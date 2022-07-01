@@ -195,3 +195,42 @@ describe('Service - Testes da rota "PUT /products/:id"', () => {
     });
   });
 });
+
+describe('Service - Testes da rota "DELETE /products/:id"', () => {
+  const { id } = allProductsResponse[0];
+
+  describe('quando o produto não existe', () => {
+    const erro = generateError('notFound', 'Product not found');
+
+    beforeEach(() => {
+      sinon.stub(productsModel, 'deleteProducts').resolves(0);
+    });
+
+    afterEach(() => {
+      productsModel.deleteProducts.restore();
+    });
+
+    it('retorna o error object "{ error: { code: "notFound", message: "Product not found" } }"', async () => {
+      const product = await productsService.deleteProducts(id);
+
+      expect(product).to.be.eqls(erro);
+    })
+  });
+
+  describe('quando o produto existe', () => {
+
+    beforeEach(() => {
+      sinon.stub(productsModel, 'deleteProducts').resolves(1);
+    });
+
+    afterEach(() => {
+      productsModel.deleteProducts.restore();
+    });
+
+    it('retorna um objeto vazio "{}"', async () => {
+      const product = await productsService.deleteProducts(id);
+
+      expect(product).to.be.eqls({});
+    });
+  });
+});

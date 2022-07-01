@@ -32,7 +32,13 @@ const idOneSaleList = [
   }
 ];
 
+const updatedProductResponse = {
+  "id": 1,
+  "name": "Martelo do Batman"
+};
+
 module.exports = {
   salesList,
   idOneSaleList,
-}
+  updatedProductResponse,
+};

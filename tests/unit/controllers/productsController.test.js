@@ -286,3 +286,56 @@ describe('Controller - Testes da rota "PUT /products/:id"', () => {
     });
   });
 });
+
+describe('Controller - Testes da rota "DELETE /products/:id"', () => {
+  const request = {};
+  const response = {};
+  let next;
+
+  const { id } = allProductsResponse[0];
+
+  before(() => {
+    response.status = sinon.stub().returns(response);
+    response.end = sinon.stub().returns();
+    next = sinon.stub().returns();
+  });
+
+  describe('quando o produto não existe', () => {
+    const erro = generateError('notFound', 'Product not found');
+
+    beforeEach(() => {
+      sinon.stub(productsService, 'deleteProducts').resolves(erro);
+    });
+
+    afterEach(() => {
+      productsService.deleteProducts.restore();
+    });
+
+    it('retorna a função next contendo como parâmetro o error object "{ code: "notFound", message: "Product not found" }"', async () => {
+      request.params = { id: 9999 };
+
+      await productsController.deleteProducts(request, response, next);
+
+      expect(next.calledWith(erro.error)).to.be.true;
+    });
+  });
+
+  describe('quando o produto existe', () => {
+
+    beforeEach(() => {
+      sinon.stub(productsService, 'deleteProducts').resolves({});
+    });
+
+    afterEach(() => {
+      productsService.deleteProducts.restore();
+    });
+
+    it('responde status "204"', async () => {
+      request.params = { id };
+
+      await productsController.deleteProducts(request, response, next);
+
+      expect(response.status.calledWith(204)).to.be.true;
+    });
+  });
+});

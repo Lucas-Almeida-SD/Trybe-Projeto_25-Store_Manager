@@ -37,8 +37,15 @@ const updatedProductResponse = {
   "name": "Martelo do Batman"
 };
 
+const allSalesResponse = [
+  { saleId: 1, date: '2022-07-01 03:24:07', productId: 1, quantity: 5 },
+  { saleId: 1, date: '2022-07-01 03:24:07', productId: 2, quantity: 10 },
+  { saleId: 2, date: '2022-07-01 03:24:07', productId: 1, quantity: 8 },
+];
+
 module.exports = {
   salesList,
   idOneSaleList,
   updatedProductResponse,
+  allSalesResponse,
 };

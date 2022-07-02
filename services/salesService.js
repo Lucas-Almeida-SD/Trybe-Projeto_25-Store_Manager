@@ -15,6 +15,18 @@ const validateSalesProducts = (salesProducts) => {
   }
 };
 
+const validatesExistenceOfSale = (sales, saleId) => {
+  const allExistingSalesIds = sales.map((sale) => sale.saleId);
+  return allExistingSalesIds.includes(saleId);
+};
+
+const validatesExistenceOfTheproduct = (products, salesProducts) => {
+  const allExistingProductIds = products.map((product) => product.id);
+  const allSaleProductExist = salesProducts.every((saleProduct) => (
+    allExistingProductIds.includes(saleProduct.productId)));
+  return allSaleProductExist;
+};
+
 const addSales = async (salesProducts) => {
   const isSalesProductsValid = validateSalesProducts(salesProducts);
 
@@ -58,9 +70,29 @@ const deleteSales = async (saleId) => {
   return {};
 };
 
+const updateSalesProducts = async (saleId, salesProducts) => {
+  const isSalesProductsValid = validateSalesProducts(salesProducts);
+  if (isSalesProductsValid.error) return { error: isSalesProductsValid.error };
+  
+  const sales = await salesModel.getAll();
+  if (!validatesExistenceOfSale(sales, saleId)) return generateError('notFound', 'Sale not found');
+  
+  const products = await productsModel.getAll();
+  if (!validatesExistenceOfTheproduct(products, salesProducts)) {
+    return generateError('notFound', 'Product not found');
+  }
+  
+  await Promise.all(salesProducts.map((saleProduct) => (
+    salesModel.updateSalesProducts(saleId, saleProduct.productId, saleProduct.quantity)
+  )));
+
+  return { saleId, itemsUpdated: salesProducts };
+};
+
 module.exports = {
   addSales,
   getAll,
   getById,
   deleteSales,
+  updateSalesProducts,
 };

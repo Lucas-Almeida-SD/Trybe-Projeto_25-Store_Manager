@@ -6,7 +6,12 @@ const connection = require('../../../helpers/connection');
 const dataMock = require('../../../__tests__/_dataMock');
 const myDataMock = require('../mocks/dataMock');
 
-const { allProductsResponse, productCreateResponse, rightProductBody } = dataMock;
+const {
+  allProductsResponse,
+  productCreateResponse,
+  rightProductBody,
+  productSearchNameResponse,
+} = dataMock;
 
 const { updatedProductResponse } = myDataMock;
 
@@ -128,6 +133,47 @@ describe('Model - Testes da rota "DELETE /products/:id"', () => {
       const product = await productsModel.deleteProducts(id);
 
       expect(product).to.be.equal(1);
+    });
+  });
+});
+
+describe('Model - Testes da rota "GET /products/search?q="', () => {
+    
+  describe('quando não encontra o "product"', () => {
+
+    beforeEach(() => {
+      sinon.stub(connection, 'execute').resolves([[]]);
+    });
+
+    afterEach(() => {
+      connection.execute.restore();
+    });
+
+    it('retorna um array vazio "[]"', async () => {
+      const q = 'non-existing product';
+
+      const product = await productsModel.searchProduct(q);
+
+      expect(product).to.be.eqls([]);
+    });
+  });
+
+  describe('quando encontra o "product"', () => {
+
+    beforeEach(() => {
+      sinon.stub(connection, 'execute').resolves([productSearchNameResponse]);
+    });
+
+    afterEach(() => {
+      connection.execute.restore();
+    });
+
+    it('retorna um array com o objeto do "product"', async () => {
+      const q = productSearchNameResponse[0].name;
+
+      const product = await productsModel.searchProduct(q);
+
+      expect(product).to.be.eqls(productSearchNameResponse);
     });
   });
 });

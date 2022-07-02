@@ -13,6 +13,7 @@ const {
   wrongProductBody,
   wrongSizeProductBody,
   productUpdateBody,
+  productSearchNameResponse,
 } = dataMock;
 
 describe('Controller - Testes da rota "/products"', () => {
@@ -336,6 +337,88 @@ describe('Controller - Testes da rota "DELETE /products/:id"', () => {
       await productsController.deleteProducts(request, response, next);
 
       expect(response.status.calledWith(204)).to.be.true;
+    });
+  });
+});
+
+describe('Controller - Testes da rota "GET /products/search?q="', () => {
+  const request = {};
+  const response = {};
+  let next;
+
+  before(() => {
+    response.status = sinon.stub().returns(response);
+    response.json = sinon.stub().returns();
+    next = sinon.stub().returns();
+  });
+  
+  describe('quando o valor da query "q" não existe', () => {
+
+    beforeEach(() => {
+      request.query = { q: null };
+      sinon.stub(productsService, 'searchProduct').resolves(allProductsResponse);
+    });
+
+    afterEach(() => {
+      productsService.searchProduct.restore();
+    });
+
+    it('responde com status "200"', async () => {
+      await productsController.searchProduct(request, response, next);
+
+      expect(response.status.calledWith(200)).to.be.true;
+    });
+
+    it('responde com json contendo um array de objetos com todos os "products"', async () => {
+      await productsController.searchProduct(request, response, next);
+
+      expect(response.json.calledWith(allProductsResponse)).to.be.true;
+    });
+  });
+
+  describe('quando o valor da query "q" existe', () => {
+    
+    describe('quando não encontra o "product"', () => {
+      const erro = generateError('notFound', 'Product not found');
+
+      beforeEach(() => {
+        request.query = { q: 'non-existing product' };
+        sinon.stub(productsService, 'searchProduct').resolves(erro);
+      });
+
+      afterEach(() => {
+        productsService.searchProduct.restore();
+      });
+
+      it('retorna a função next contendo como parâmetro o error object "{ code: "notFound", message: "Product not found" }"', async () => {
+        await productsController.searchProduct(request, response, next);
+
+        expect(next.calledWith(erro.error)).to.be.true;
+      });
+    });
+
+    describe('quando encontra o "product"', () => {
+  
+      beforeEach(() => {
+        request.query = { q: productSearchNameResponse[0].name };
+        sinon.stub(productsService, 'searchProduct').resolves(productSearchNameResponse);
+      });
+
+      afterEach(() => {
+        productsService.searchProduct.restore();
+      });
+
+      it('responde com status "200"', async () => {
+        await productsController.searchProduct(request, response, next);
+
+        expect(response.status.calledWith(200)).to.be.true;
+      });
+
+      it('responde com json contendo um array de objetos com o "product" encontrado', async () => {
+        await productsController.searchProduct(request, response, next);
+
+        expect(response.json.calledWith(productSearchNameResponse)).to.be.true;
+      });
     });
   });
 });

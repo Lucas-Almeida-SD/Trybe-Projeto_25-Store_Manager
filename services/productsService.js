@@ -57,10 +57,20 @@ const deleteProducts = async (id) => {
   return {};
 };
 
+const searchProduct = async (productName) => {
+  const product = (productName) ? (await productsModel.searchProduct(productName))
+    : await productsModel.getAll();
+  
+  if (product.length === 0) return generateError('notFound', 'Product not found');
+  
+  return product;
+};
+
 module.exports = {
   getAll,
   getById,
   addProduct,
   updateProduct,
   deleteProducts,
+  searchProduct,
 };

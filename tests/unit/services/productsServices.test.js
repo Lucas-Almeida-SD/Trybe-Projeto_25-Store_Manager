@@ -13,6 +13,7 @@ const {
   rightProductBody,
   wrongSizeProductBody,
   productUpdateBody,
+  productSearchNameResponse,
 } = dataMock;
 
 describe('Service - Testes da rota "GET /products"', () => {
@@ -61,12 +62,7 @@ describe('Service - Testes da rota "GET /products/:id"', () => {
     describe('quando não encontra o produto', () => {
       const id = 9999;
 
-      const erro = {
-        error: {
-          code: 'notFound',
-          message: 'Product not found',
-        },
-      };
+      const erro = generateError('notFound', 'Product not found');
 
       beforeEach(() => {
         sinon.stub(productsModel, 'getById').resolves(undefined);
@@ -88,7 +84,7 @@ describe('Service - Testes da rota "GET /products/:id"', () => {
 describe('Service - Testes da rota "POST /products"', () => {
   describe('quando o "name" é inválido', () => {
     describe('quando o "name" não existe', () => {
-      const erro = { error: { code: 'badRequest', message: '"name" is required' } };
+      const erro = generateError('badRequest','"name" is required');
 
       it('retorna um error object adequado', async () => {
         const product = await productsService.addProduct(wrongProductBody.name);
@@ -98,12 +94,7 @@ describe('Service - Testes da rota "POST /products"', () => {
     });
 
     describe('quando o "name" possui comprimento não permitido', () => {
-      const erro = {
-        error: {
-          code: 'unprocessableEntity',
-          message: '"name" length must be at least 5 characters long',
-        }
-      };
+      const erro = generateError('unprocessableEntity', '"name" length must be at least 5 characters long');
 
       it('retorna um error object adequado', async () => {
         const product = await productsService.addProduct(wrongSizeProductBody.name);
@@ -231,6 +222,70 @@ describe('Service - Testes da rota "DELETE /products/:id"', () => {
       const product = await productsService.deleteProducts(id);
 
       expect(product).to.be.eqls({});
+    });
+  });
+});
+
+describe('Service - Testes da rota "GET /products/search?q="', () => {
+  
+  describe('quando o valor da query "q" não existe', () => {
+
+    beforeEach(() => {
+      sinon.stub(productsModel, 'getAll').resolves(allProductsResponse);
+    });
+
+    afterEach(() => {
+      productsModel.getAll.restore();
+    });
+
+    it('retorna um array de objetos com todos os "products"', async () => {
+      const q = null;
+
+      const product = await productsService.searchProduct(q);
+
+      expect(product).to.be.eqls(allProductsResponse);
+    });
+  });
+
+  describe('quando o valor da query "q" existe', () => {
+    
+    describe('quando não encontra o "product"', () => {
+      const erro = generateError('notFound', 'Product not found');
+
+      beforeEach(() => {
+        sinon.stub(productsModel, 'searchProduct').resolves([]);
+      });
+
+      afterEach(() => {
+        productsModel.searchProduct.restore();
+      });
+
+      it('retorna o error object "{ error: { code: "notFound", message: "Product not found" } }"', async () => {
+        const q = 'non-existing product';
+
+        const product = await productsService.searchProduct(q);
+
+        expect(product).to.be.eqls(erro);
+      });
+    });
+
+    describe('quando encontra o "product"', () => {
+  
+      beforeEach(() => {
+        sinon.stub(productsModel, 'searchProduct').resolves(productSearchNameResponse);
+      });
+
+      afterEach(() => {
+        productsModel.searchProduct.restore();
+      });
+
+      it('retorna um array com o objeto do "product"', async () => {
+        const q = productSearchNameResponse[0].name;
+
+        const product = await productsService.searchProduct(q);
+
+        expect(product).to.be.eqls(productSearchNameResponse);
+      });
     });
   });
 });

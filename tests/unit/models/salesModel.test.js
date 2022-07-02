@@ -152,3 +152,24 @@ describe('Model - Testes da rota "DELETE /sales/:id"', () => {
     });
   });
 });
+
+describe('Model - Testes da rota "PUT /sales/:id"', () => {
+  const saleId = 1;
+
+  describe('quando atualiza um "sale product"', () => {
+
+    beforeEach(() => {
+      sinon.stub(connection, 'execute').resolves([{ affectedRows: 1 }]);
+    });
+
+    afterEach(() => {
+      connection.execute.restore();
+    });
+
+    it('retorna valor "1" correspondente às "affectedRows"', async () => {
+      const saleProduct = await salesModel.updateSalesProducts(saleId);
+
+      expect(saleProduct).to.be.equal(1);
+    });
+  });
+});

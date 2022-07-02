@@ -9,6 +9,7 @@ const generateError = require('../../../helpers/generateError');
 const myDataMock = require('../mocks/dataMock');
 
 const {
+  allProductsResponse,
   wrongSaleNotProductIdBody,
   wrongSaleNotQuantityBody,
   wrongZeroNegativeBody,
@@ -18,7 +19,7 @@ const {
   rightSaleBody,
 } = dataMock;
 
-const { salesList, idOneSaleList } = myDataMock;
+const { salesList, idOneSaleList, allSalesResponse } = myDataMock;
 
 describe('Service - Testes da rota "POST /sales"', () => {
 
@@ -204,6 +205,109 @@ describe('Service - Testes da rota "DELETE /sales/:id"', () => {
       const sale = await salesService.deleteSales(saleId);
 
       expect(sale).to.be.eqls({});
+    });
+  });
+});
+
+describe('Service - Testes da rota "PUT /sales/:id"', () => {
+  const saleId = 1;
+  const nonExistentSaleId = 9999;
+
+  describe('quando "sales products" é inválido', () => {
+
+    describe('quando algum "productId" não existe', () => {
+      const erro = generateError('badRequest', '"productId" is required');
+
+      it('retorna o error object "{ error: { code: "badRequest", message: ""productId" is required" } }"', async () => {
+        const saleProduct = await salesService.updateSalesProducts(saleId, wrongSaleNotProductIdBody);
+
+        expect(saleProduct).to.be.eqls(erro);
+      });
+    });
+
+    describe('quando algum "quantity" não existe', () => {
+      const erro = generateError('badRequest', '"quantity" is required');
+
+      it('retorna o error object "{ error: { code: "badRequest", message: ""quantity" is required" } }"', async () => {
+        const saleProduct = await salesService.updateSalesProducts(saleId, wrongSaleNotQuantityBody);
+
+        expect(saleProduct).to.be.eqls(erro);
+      });
+    });
+
+    describe('quando algum "quantity" é menor ou igual "0"', () => {
+      const erro = generateError('unprocessableEntity', '"quantity" must be greater than or equal to 1');
+
+      it('menor que "0" - retorna o error object "{ error: { code: "unprocessableEntity", message: ""quantity" must be greater than or equal to 1" } }"', async () => {
+        const saleProduct = await salesService.updateSalesProducts(saleId, wrongZeroNegativeBody);
+
+        expect(saleProduct).to.be.eqls(erro);
+      });
+
+      it('igual a "0" - retorna o error object "{ error: { code: "unprocessableEntity", message: ""quantity" must be greater than or equal to 1" } }"', async () => {
+        const saleProduct = await salesService.updateSalesProducts(saleId, wrongZeroQuantityBody);
+
+        expect(saleProduct).to.be.eqls(erro);
+      });
+    });
+  });
+
+  describe('quando "sale" não existe no banco de dados', () => {
+    const erro = generateError('notFound', 'Sale not found');
+
+    beforeEach(() => {
+      sinon.stub(salesModel, 'getAll').resolves(allSalesResponse);
+    });
+
+    afterEach(() => {
+      salesModel.getAll.restore();
+    });
+
+    it('retorna o error object "{ error: { code: "notFound", message: "Sale not found" } }', async () => {
+      const saleProduct = await salesService.updateSalesProducts(nonExistentSaleId, rightSaleBody);
+
+      expect(saleProduct).to.be.eqls(erro);
+    });
+  });
+
+  describe('quando algum "product" não existe no banco de dados', () => {
+    const erro = generateError('notFound', 'Product not found');
+
+    beforeEach(() => {
+      sinon.stub(salesModel, 'getAll').resolves(allSalesResponse);
+      sinon.stub(productsModel, 'getAll').resolves(allProductsResponse)
+    });
+
+    afterEach(() => {
+      salesModel.getAll.restore();
+      productsModel.getAll.restore();
+    });
+
+    it('retorna o error object "{ error: { code: "notFound", message: "Product not found" } }', async () => {
+      const saleProduct = await salesService.updateSalesProducts(saleId, nonexistentProductIdBody);
+
+      expect(saleProduct).to.be.eqls(erro);
+    });
+  });
+
+  describe('quando atualiza os "sales products"', () => {
+
+    beforeEach(() => {
+      sinon.stub(salesModel, 'getAll').resolves(allSalesResponse);
+      sinon.stub(productsModel, 'getAll').resolves(allProductsResponse)
+      sinon.stub(Promise, 'all').resolves();
+    });
+
+    afterEach(() => {
+      salesModel.getAll.restore();
+      productsModel.getAll.restore();
+      Promise.all.restore();
+    });
+
+    it('retorna um objeto contendo os dados da alteração', async () => {
+      const saleProduct = await salesService.updateSalesProducts(saleId, rightSaleBody);
+
+      expect(saleProduct).to.be.eqls({ saleId, itemsUpdated: rightSaleBody });
     });
   });
 });

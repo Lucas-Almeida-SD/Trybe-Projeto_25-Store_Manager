@@ -55,7 +55,7 @@ networks:
   # Rede padrão, criada automaticamente
   default:
     # Dá um nome específico à rede padrão
-    # name: store_manager_net
+    name: store_manager_net
 
 volumes:
   node_modules:

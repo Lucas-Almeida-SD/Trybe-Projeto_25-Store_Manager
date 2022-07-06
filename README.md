@@ -50,6 +50,12 @@ Para iniciá-lo, siga os passos abaixo:
   # Iniciar o projeto
   $ npm start
   ```
+
+  Para executar os testes, utilize o terminal interativo do container e insira o comando abaixo: 
+
+  ```bash
+  $ npm run test:mocha
+  ```
 </details>
 
 <details>
@@ -67,6 +73,12 @@ Para iniciá-lo, siga os passos abaixo:
 
   # Iniciar o projeto
   $ npm start
+  ```
+
+  Para executar os testes, utilize o terminal e insira o comando abaixo: 
+
+  ```bash
+  $ npm run test:mocha
   ```
 </details>
 

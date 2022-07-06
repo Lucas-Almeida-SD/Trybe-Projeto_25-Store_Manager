@@ -5,6 +5,7 @@ const httpStatus = {
   badRequest: 400,
   notFound: 404,
   unprocessableEntity: 422,
+  internalServerError: 500,
 };
 
 module.exports = httpStatus;

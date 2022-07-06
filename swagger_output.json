@@ -1,0 +1,495 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "REST API",
+    "description": "This API is a sales management system in the dropshipping format in which it is possible to do a CRUD, that is, create, view, delete and update products and sales."
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/products/": {
+      "get": {
+        "description": "Reads all products in the MySQL database.",
+        "parameters": [],
+        "responses":  {
+          "200": {
+            "description": "OK",
+            "examples": {
+              "application/json": [
+                {
+                  "id": 1,
+                  "name": "Martelo de Thor"
+                },
+                {
+                  "id": 2,
+                  "name": "Traje de encolhimento"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Adds a product to the MySQL database.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Request body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "example": "ProdutoX" } 
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "CREATED",
+            "examples": {
+              "application/json": {
+                "id": 4,
+                "name": "ProdutoX"
+              }
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "examples": {
+              "application/json": {
+                "message": "\"name\" is required"
+              }
+            }
+          },
+          "422": {
+            "description": " UNPROCESSABLE ENTITY",
+            "examples": {
+              "application/json": {
+                "message": "\"name\" length must be at least 5 characters long"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/search": {
+      "get": {
+        "description": "Reads the products that match the query in the MySQL database.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "description": "Product's name",
+            "type": "string",
+            "example": "thor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {
+              "application/json": [
+                {
+                  "id": 1,
+                  "name": "Martelo de Thor"
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "examples": {
+              "application/json": {
+                "message": "Product not found"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "description": "Reads the product corresponding to the ID in the MySQL database.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Product id",
+            "type": "integer",
+            "example": 1,
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {
+              "application/json": {
+                "id": 1,
+                "name": "Martelo de Thor"
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "examples": {
+              "application/json": {
+                "message": "Product not found"
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Update the product corresponding to the ID in the MySQL database.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Product id",
+            "type": "integer",
+            "example": 1,
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Request body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "example": "Novo nome" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {
+              "application/json": {
+                "id": 1,
+                "name": "Novo nome"
+              }
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "examples": {
+              "application/json": {
+                "message": "\"name\" is required"
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "examples": {
+              "application/json": {
+                "message": "Product not found"
+              }
+            }
+          },
+          "422": {
+            "description": " UNPROCESSABLE ENTITY",
+            "examples": {
+              "application/json": {
+                "message": "\"name\" length must be at least 5 characters long"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete the product corresponding to the ID in the MySQL database.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Product id",
+            "type": "integer",
+            "example": "1",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "NO CONTENT"
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "examples": {
+              "application/json": {
+                "message": "Product not found"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sales/": {
+      "get": {
+        "description": "Reads sales in the MySQL database.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {
+              "application/json": [
+                {
+                  "saleId": 1,
+                  "date": "2022-07-05T05:12:55.000Z",
+                  "productId": 1,
+                  "quantity": 5
+                },
+                {
+                  "saleId": 1,
+                  "date": "2022-07-05T05:12:55.000Z",
+                  "productId": 2,
+                  "quantity": 10
+                },
+                {
+                  "saleId": 2,
+                  "date": "2022-07-05T05:12:55.000Z",
+                  "productId": 3,
+                  "quantity": 15
+                }
+              ]
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Adds a sale to the MySQL database.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Request body",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "productId": { "type": "integer" },
+                  "quantity": { "type": "integer" }
+                }
+              },
+              "example": [
+                {
+                  "productId": 1,
+                  "quantity":1
+                },
+                {
+                  "productId": 2,
+                  "quantity":5
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "CREATED",
+            "examples": {
+              "application/json":  {
+                "id": 3,
+                "itemsSold": [
+                  {
+                    "productId": 1,
+                    "quantity": 1
+                  },
+                  {
+                    "productId": 2,
+                    "quantity": 5
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "examples": {
+              "application/json": {
+                "message{1}": "\"productId\" is required",
+                "message{2}": "\"quantity\" is required"
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "examples": {
+              "application/json": {
+                "message": "Product not found"
+              }
+            }
+          },
+          "422": {
+            "description": " UNPROCESSABLE ENTITY",
+            "examples": {
+              "application/json": {
+                "message": "\"quantity\" must be greater than or equal to 1"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sales/{id}": {
+      "get": {
+        "description": "Reads the sale corresponding to the ID in the MySQL database.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Sale id",
+            "type": "integer",
+            "example": "1",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {
+              "application/json": [
+                {
+                  "date": "2021-09-09T04:54:29.000Z",
+                  "productId": 1,
+                  "quantity": 2
+                },
+                {
+                  "date": "2021-09-09T04:54:54.000Z",
+                  "productId": 2,
+                  "quantity": 2
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "examples": {
+              "application/json": {
+                "message": "Sale not found"
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Update a sale matching the ID in the MySQL database.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Sale id",
+            "type": "integer",
+            "example": 1,
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Request body",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "productId": { "type": "integer" },
+                  "quantity": { "type": "integer" }
+                }
+              },
+              "example": [
+                {
+                  "productId": 1,
+                  "quantity":10
+                },
+                {
+                  "productId": 2,
+                  "quantity":50
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {
+              "application/json": {
+                "saleId": 1,
+                "itemsUpdated": [
+                  {
+                    "productId": 1,
+                    "quantity":10
+                  },
+                  {
+                    "productId": 2,
+                    "quantity":50
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST",
+            "examples": {
+              "application/json": {
+                "message{1}": "\"productId\" is required",
+                "message{2}": "\"quantity\" is required"
+              }
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "examples": {
+              "application/json": {
+                "message{1}": "Sale not found",
+                "message{2}": "Product not found"
+              }
+            }
+          },
+          "422": {
+            "description": " UNPROCESSABLE ENTITY",
+            "examples": {
+              "application/json": {
+                "message": "\"quantity\" must be greater than or equal to 1"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Deletes a sale corresponding to the ID in the MySQL database.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Sale id",
+            "type": "integer",
+            "example": 1,
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "NO CONTENT"
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "examples": {
+              "application/json": {
+                "message": "Sale not found"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

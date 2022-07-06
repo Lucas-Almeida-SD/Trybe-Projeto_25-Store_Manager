@@ -70,4 +70,4 @@ Para iniciá-lo, siga os passos abaixo:
   ```
 </details>
 
-Acesse a documentação da API no link [localhost:3000/docs](localhost:3000/docs).
+Acesse a documentação da API no link [localhost:3000/docs](http://localhost:3000/docs).

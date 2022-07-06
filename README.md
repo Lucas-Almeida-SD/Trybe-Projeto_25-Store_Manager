@@ -70,4 +70,4 @@ Para iniciá-lo, siga os passos abaixo:
   ```
 </details>
 
-A API estará disponível na URL base `localhost:3000`. Utilize algum REST Client como `Insomnia` ou `Postman` para realizar as requisições.
+Acesse a documentação da API no link [localhost:3000/docs](localhost:3000/docs).

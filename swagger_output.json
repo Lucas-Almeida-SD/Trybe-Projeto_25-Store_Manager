@@ -3,7 +3,7 @@
   "info": {
     "version": "1.0.0",
     "title": "REST API",
-    "description": "This API is a sales management system in the dropshipping format in which it is possible to do a CRUD, that is, create, view, delete and update products and sales."
+    "description": "This API is a sales management system in the dropshipping format in which it is possible to do a CRUD, that is, create, read, update and delete products and sales."
   },
   "host": "localhost:3000",
   "basePath": "/",
